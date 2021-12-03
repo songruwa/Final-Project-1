@@ -1,14 +1,14 @@
 ---
-title: "PM566 Final Project"
-author: "Songru"
-output: 
-    html_document:
-        toc: TRUE
-        toc_float: TRUE
+title: "Smoking-Y&N"
+author: "Songru Wang"
+data: "Never smoked trend for 1995-2010"
+date: "10/19/2021"
+output:
+  github_document:
+  html_document:
+    html_preview: false
+always_allow_html: true
 ---
-
-This is my PM566 Final Project website.
-
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
@@ -400,6 +400,5 @@ leaflet(smoke1)%>%
   )%>%
   addLegend('bottomleft',pal = commu.pal,values = smoke1$`Never smoked`,title = 'The number of people who never smoke',opacity = 1)
 ```
-
 
 
