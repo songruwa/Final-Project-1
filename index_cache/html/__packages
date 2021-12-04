@@ -10,5 +10,9 @@ stringr
 forcats
 data.table
 dtplyr
+knitr
+plotly
+DT
+reactable
 skimr
 leaflet

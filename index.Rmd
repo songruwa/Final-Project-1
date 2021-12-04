@@ -10,28 +10,45 @@ output:
 This is my PM566 Final Project website.
 
 
-```{r setup, include=FALSE}
+```{r setup, echo=FALSE, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(data.table)
 library(dtplyr)
 library(dplyr)
+library(knitr)
+library(plotly)
+library(DT)
+library(reactable)
 options(repos = c(CRAN = "http://cran.rstudio.com"))
+
+opts_chunk$set(
+  warning = FALSE,
+  message = FALSE,
+  #eval=FALSE,
+  echo = TRUE,
+  fig.width = 7, 
+  fig.align = 'center',
+  fig.asp = 0.618,
+  out.width = "700px")
 ```
 
 
 
-Introdution:
+##Introdution:
+
 Since nowadays there are lot of smokers around the world and many policies have been applied to curb the number of smokers, I would like to figure out whether the number of smokers is actually decreased or not. This data is about "Never smoked trend for 1995-2010". I've found the data from Centers for Disease Control and Prevention website. 
 
-Then I want to figure out whether non-smokers in each different city become less or not as time goes by, and I want to find the relationship between the change in the number of smokers and the state.
+Then I want to figure out:
+1. Whether non-smokers in each different city become less or not as time goes by
+2. The relationship between the change in the number of smokers and the state.
 
+##Description of the data:
 
-Description of the data:
 While analysing the original data table,I found there are 876 obervations, and 7 variables. In this data set, 56 states (including several islands next to the US) are included. And there is no missing values in the data table. 
 
 
-```{r,cache=TRUE}
+```{r,cache=TRUE, echo=FALSE}
 X2013_08_01T20_31_13_000Z <- read_csv("2013-08-01T20_31_13.000Z.csv")
 smoke<- X2013_08_01T20_31_13_000Z
 ```
@@ -43,7 +60,7 @@ tail(smoke)
 unique(smoke$State)
 ```
 
-```{r,cache=TRUE}
+```{r,cache=TRUE, echo=FALSE}
 str(smoke)
 table(smoke$Year)
 table(smoke$State)
@@ -53,9 +70,21 @@ any(is.na(smoke$`Former smoker`))
 any(is.na(smoke$`Never smoked`))
 ```
 
+Find outliers using plotly
+```{r}
+#Smoke Everyday
+p1<-ggplot(smoke, aes(x = Year, y = `Smoke everyday`, color = State)) + geom_line() + geom_point(size = .5, alpha = 0.5)
+ggplotly(p1)
+
+# Never Smoke
+p1<-ggplot(smoke, aes(x = Year, y = `Never smoked`, color = State)) + geom_line() + geom_point(size = .5, alpha = 0.5)
+ggplotly(p1)
+```
+According to the graph of Never smoke and Year, I found there are three outliers: Virgin Islands, Puerto Rico, and Utah. Thus, I consider them as outliers.
 
 
-Data Analsis
+##Data Analsis
+
 According to the four graphs, I found the number of people who smoke everyday shows a decrease as times goes by. The number of people who smoke someday shows a gradual increase as times goes by.The number of people who never smoke becomes more as time goes by.The number of people who is former smokers, in other words, the people who quit smoking, becomes more as times goes by.
 ```{r,cache=TRUE}
 library(skimr)
@@ -71,45 +100,40 @@ smoke_avg<-
     S_former_avg=mean(`Former smoker`),
     S_never_avg=mean(`Never smoked`)
   )
-smoke_avg
+
+reactable(smoke_avg)
 ```
 
 
-first: Year&smoking status
-```{r,cache=TRUE}
-smoke_avg%>%
-  ggplot(mapping = aes(x=Year,y=S_everyday_avg))+
-  geom_point()+
-  geom_smooth(method=lm,col="black")
+##first: Year&smoking status
+```{r,cache=TRUE, echo=FALSE}
+everyday <- ggplot(smoke_avg,aes(x=Year,y=S_everyday_avg))+geom_point()+geom_smooth()
+ggplotly(everyday)
 
-smoke_avg%>%
-  ggplot(mapping = aes(x=Year,y=S_someday_avg))+
-  geom_point()+
-  geom_smooth(method=lm,col="black")
+someday <- ggplot(smoke_avg,aes(x=Year,y=S_someday_avg))+geom_point()+geom_smooth()
+ggplotly(someday)
 
-smoke_avg%>%
-  ggplot(mapping = aes(x=Year,y=S_former_avg))+
-  geom_point()+
-  geom_smooth(method=lm,col="black")
 
-smoke_avg%>%
-  ggplot(mapping = aes(x=Year,y=S_never_avg))+
-  geom_point()+
-  geom_smooth(method=lm,col="black")
+former <- ggplot(smoke_avg,aes(x=Year,y=S_former_avg))+geom_point()+geom_smooth()
+ggplotly(former)
+
+
+never <- ggplot(smoke_avg,aes(x=Year,y=S_never_avg))+geom_point()+geom_smooth()
+ggplotly(never)
 
 
 ```
 
 
-
+**
 Then I divide these 56 states into 5 geographical categories: Northeast, Southwest, West, Southeast, and Midwest.
-
+**
 Alaska is hard to define which region it belongs to, so I leave it as NA value.Guam is an organized, unincorporated territory of the United States, so I leave it as NA value.District of Columbia is not a state.
 I also choose to not define the geographic region of Virgin Island and Hawaii
 
 Smoke Everyday in each geographic region shows a decreasing tendency. Smoke Somedays in each geographical region shows a slight increase. Former Smoker showed decreasing tendency in the West region, increasing tendency in Northeast, Midwest, and Southeast
 
-```{r,cache=TRUE}
+```{r,cache=TRUE, echo=FALSE}
 smoke<-
   smoke%>%
   mutate(Geo_cate=case_when(
@@ -164,8 +188,10 @@ smoke<-
   ))
 
 ```
-
-```{r,cache=TRUE}
+**
+The graphs for each categories of the smoking is listed in the following order: Northeast, Southwest, West, Southwest, Midwest
+**
+```{r,cache=TRUE, echo=FALSE}
 
 # Smoke Everyday
 smoke%>%
@@ -263,9 +289,16 @@ smoke%>%
 ```
 
 
-Distribution on the map
+## Let's find the relationship between never smoke and state
+```{r}
+plot_ly(smoke,x=~Year, y= ~`Never smoked`,color = ~State, type = "scatter", mode = "lines")
+```
+
+
+##Distribution on the map
+
 1. find the longtitude and latitude of each city
-```{r,cache=TRUE}
+```{r,cache=TRUE, echo=FALSE}
 dat <- c("Alabama (32.840569999605975, -86.63186000013877)",
 "Alaska (64.84507999974238, -147.72205999986895)",
 "Arizona (34.86596999961597, -111.76380999973156)",
@@ -339,7 +372,7 @@ smoke1 <- left_join(smoke1,dat_new,
 
 2. Using leaflet
 a. "Smoking Everyday"
-```{r,cache=TRUE}
+```{r,cache=TRUE, echo=FALSE}
 library(leaflet)
 
 commu.pal <- colorNumeric(c('darkgreen','goldenrod','brown'), domain=smoke$`Smoke everyday`)
@@ -355,7 +388,7 @@ leaflet(smoke1)%>%
 
 
 b. "Smoke Some Days"
-```{r,cache=TRUE}
+```{r,cache=TRUE, echo=FALSE}
 library(leaflet)
 
 commu.pal <- colorNumeric(c('darkgreen','goldenrod','brown'), domain=smoke1$`Smoke some days`)
@@ -371,7 +404,7 @@ leaflet(smoke1)%>%
 
 
 c. "Former Smoker"
-```{r,cache=TRUE}
+```{r,cache=TRUE, echo=FALSE}
 library(leaflet)
 
 commu.pal <- colorNumeric(c('darkgreen','goldenrod','brown'), domain=smoke1$`Former smoker`)
@@ -387,7 +420,7 @@ leaflet(smoke1)%>%
 
 
 D. Never Smoke
-```{r,cache=TRUE}
+```{r,cache=TRUE, echo=FALSE}
 library(leaflet)
 
 commu.pal <- colorNumeric(c('darkgreen','goldenrod','brown'), domain=smoke1$`Never smoked`)
@@ -401,5 +434,6 @@ leaflet(smoke1)%>%
   addLegend('bottomleft',pal = commu.pal,values = smoke1$`Never smoked`,title = 'The number of people who never smoke',opacity = 1)
 ```
 
-Conclusion:
+##Conclusion:
+
 Based on the analysis, we can conclude that the number of smokers decreases as time goes by, the number of former smokers increases, and the number of people who never smoke increases. This is possibly due to education, policy, or the taxes on cigerattes. However, the changes in different geographical regions is different, which needs further data collection and data analysis.
