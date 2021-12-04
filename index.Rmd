@@ -35,7 +35,7 @@ opts_chunk$set(
 
 
 
-##Introdution:
+## Introdution:
 
 Since nowadays there are lot of smokers around the world and many policies have been applied to curb the number of smokers, I would like to figure out whether the number of smokers is actually decreased or not. This data is about "Never smoked trend for 1995-2010". I've found the data from Centers for Disease Control and Prevention website. 
 
@@ -43,7 +43,7 @@ Then I want to figure out:
 1. Whether non-smokers in each different city become less or not as time goes by
 2. The relationship between the change in the number of smokers and the state.
 
-##Description of the data:
+## Description of the data:
 
 While analysing the original data table,I found there are 876 obervations, and 7 variables. In this data set, 56 states (including several islands next to the US) are included. And there is no missing values in the data table. 
 
@@ -83,7 +83,7 @@ ggplotly(p1)
 According to the graph of Never smoke and Year, I found there are three outliers: Virgin Islands, Puerto Rico, and Utah. Thus, I consider them as outliers.
 
 
-##Data Analsis
+## Data Analsis
 
 According to the four graphs, I found the number of people who smoke everyday shows a decrease as times goes by. The number of people who smoke someday shows a gradual increase as times goes by.The number of people who never smoke becomes more as time goes by.The number of people who is former smokers, in other words, the people who quit smoking, becomes more as times goes by.
 ```{r,cache=TRUE}
@@ -105,7 +105,7 @@ reactable(smoke_avg)
 ```
 
 
-##first: Year&smoking status
+## First:Year&smoking status
 ```{r,cache=TRUE, echo=FALSE}
 everyday <- ggplot(smoke_avg,aes(x=Year,y=S_everyday_avg))+geom_point()+geom_smooth()
 ggplotly(everyday)
@@ -295,8 +295,7 @@ plot_ly(smoke,x=~Year, y= ~`Never smoked`,color = ~State, type = "scatter", mode
 ```
 
 
-##Distribution on the map
-
+## Distribution on the map
 1. find the longtitude and latitude of each city
 ```{r,cache=TRUE, echo=FALSE}
 dat <- c("Alabama (32.840569999605975, -86.63186000013877)",
