@@ -191,7 +191,7 @@ smoke<-
 **
 The graphs for each categories of the smoking is listed in the following order: Northeast, Southwest, West, Southwest, Midwest
 **
-```{r,cache=TRUE, echo=FALSE}
+```{r,cache=TRUE}
 
 # Smoke Everyday
 smoke%>%
