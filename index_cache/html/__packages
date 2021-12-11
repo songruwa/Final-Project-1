@@ -15,4 +15,5 @@ plotly
 DT
 reactable
 skimr
+janitor
 leaflet

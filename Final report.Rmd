@@ -1,15 +1,11 @@
 ---
-title: "PM566 Final Project"
+title: "Final Report"
 author: "Songru Wang"
+date: "12/10/2021"
 output: 
-    html_document:
-        toc: TRUE
-        toc_float: TRUE
-        code_folding: hide
+  pdf_document:
+    latex_engine: xelatex
 ---
-
-This is my PM566 Final Project website.
-
 
 ```{r setup, echo=FALSE, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -41,7 +37,6 @@ smoke<- X2013_08_01T20_31_13_000Z
 ```
 
 
-
 # Introdution:
 
 Since nowadays there are lot of smokers around the world and many policies have been applied to curb the number of smokers, I would like to figure out whether the number of smokers is actually decreased or not. This data is about "Never smoked trend for 1995-2010". I've found the data from Centers for Disease Control and Prevention website. 
@@ -53,12 +48,16 @@ Since nowadays there are lot of smokers around the world and many policies have 
 # Description of the data:
 
 While analysing the original data table,I found there are 876 obervations, and 7 variables. In this data set, 56 states (including several islands next to the US) are included. And there is no missing values in the data table, except there are missing values in the location column, but this will not influence my analysis. I deceid to not remove these missing values. 
-```{r,cache=TRUE}
+```{r}
 dim(smoke)
 unique(smoke$State)
-skim(smoke)
 ```
 
+```{r}
+table(smoke$Year)
+table(smoke$State)
+skim(smoke)
+```
 
 ## First check the relationship between year and smoke everyday, year and never smoked based states by applying ggplotly
 According to the data, I can see that as time goes by, most states shows a increasing tendency in the number of non-smokers and a decreasing tendency in the number of people who smoke everyday.
@@ -77,7 +76,7 @@ ggplotly(p1)
 # Data Analsis
 
 According to the four graphs, I found the number of people who smoke everyday shows a decrease as times goes by. The number of people who smoke someday shows a gradual increase as times goes by.The number of people who never smoke becomes more as time goes by.The number of people who is former smokers, in other words, the people who quit smoking, becomes more as times goes by.
-```{r,cache=TRUE}
+```{r}
 # Find the relationship between year and the average number of each category
 smoke_avg<-
   smoke%>%
@@ -94,7 +93,7 @@ reactable(smoke_avg)
 
 
 ## First:Year&smoking status
-```{r,cache=TRUE, echo=FALSE}
+```{r}
 everyday <- ggplot(smoke_avg,aes(x=Year,y=S_everyday_avg))+geom_point()+geom_smooth()
 ggplotly(everyday)
 
@@ -114,7 +113,7 @@ ggplotly(never)
 
 # Distribution on the map
 1. find the longtitude and latitude of each city
-```{r,cache=TRUE, echo=FALSE}
+```{r}
 dat <- c("Alabama (32.840569999605975, -86.63186000013877)",
 "Alaska (64.84507999974238, -147.72205999986895)",
 "Arizona (34.86596999961597, -111.76380999973156)",
@@ -186,9 +185,9 @@ smoke1 <- left_join(smoke1,dat_new,
 
 
 ## Using leaflet
-### a. "Smoking Everyday"
+### A. "Smoking Everyday"
 Then I find Utah has the smallest number of people who smoking everyday.
-```{r,cache=TRUE, echo=FALSE}
+```{r}
 library(leaflet)
 
 commu.pal <- colorNumeric(c('darkgreen','goldenrod','brown'), domain=smoke$`Smoke everyday`)
@@ -203,8 +202,8 @@ leaflet(smoke1)%>%
 ```
 
 
-### b. "Smoke Some Days"
-```{r,cache=TRUE, echo=FALSE}
+### B. "Smoke Some Days"
+```{r}
 library(leaflet)
 
 commu.pal <- colorNumeric(c('darkgreen','goldenrod','brown'), domain=smoke1$`Smoke some days`)
@@ -219,8 +218,8 @@ leaflet(smoke1)%>%
 ```
 
 
-### c. "Former Smoker"
-```{r,cache=TRUE, echo=FALSE}
+### C. "Former Smoker"
+```{r}
 library(leaflet)
 
 commu.pal <- colorNumeric(c('darkgreen','goldenrod','brown'), domain=smoke1$`Former smoker`)
@@ -235,8 +234,8 @@ leaflet(smoke1)%>%
 ```
 
 
-### d. Never Smoke
-```{r,cache=TRUE, echo=FALSE}
+### D. Never Smoke
+```{r}
 library(leaflet)
 
 commu.pal <- colorNumeric(c('darkgreen','goldenrod','brown'), domain=smoke1$`Never smoked`)
@@ -250,13 +249,9 @@ leaflet(smoke1)%>%
   addLegend('bottomleft',pal = commu.pal,values = smoke1$`Never smoked`,title = 'The number of people who never smoke',opacity = 1)
 ```
 
-# Conclusion:
+#Conclusion:
 
 Based on the analysis, we can conclude that the number of smokers decreases as time goes by, the number of former smokers increases, and the number of people who never smoke increases. This is possibly due to education, policy, or the taxes on cigerattes. 
 
 And these changes also apply to most states, which can be shown from the ggplotly graphs.
-
-# Download the full report here
-https://github.com/songruwa/Final-Project-1/blob/main/Final%20report.pdf
-
 
